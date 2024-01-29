@@ -4,6 +4,9 @@ module spi_fsm (
     input wire              spi_sclk,
     input wire              load,
     input wire [23:0]       data_in,
+                            // [23:18] = bus direction and number of bytes to transfer
+                            // [17:8] = address where data is to be written
+                            // [7:0] = data to be transferred (MSB to LSB)
     output reg              spi_mosi,
     output reg              spi_cs_n,
     input wire              spi_miso,
@@ -66,7 +69,7 @@ module spi_fsm (
     end
 
     //  output state
-    
+
     always @(posedge clk) begin
         if (current_state == IDLE) begin
             data_out <= data_reg;

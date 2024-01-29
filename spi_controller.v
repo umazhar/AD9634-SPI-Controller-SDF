@@ -6,7 +6,12 @@ module spi_controller (
     input  wire                 spi_miso,   
     output reg                  spi_cs_n,   
 
-    input  wire [23:0] data_in,    // Combined data and address input
+    input  wire [23:0] data_in,    // data
+
+                                // [23:18] = bus direction and number of bytes to transfer
+                                // [17:8] = address where data is to be written
+                                // [7:0] = data to be transferred (MSB to LSB)
+
     input  wire        load,       // Signal to load data
 
 );
