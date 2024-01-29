@@ -30,49 +30,16 @@ module spi_controller (
         .div_clk(spi_sclk)
     );
 
-    // fsm for SPI Operation
-    always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            current_state <= IDLE;
-            spi_cs_n <= 1;
-            data_reg <= 24'b0;
-        end else begin
-            case (current_state)
-                IDLE: begin
-                    if (load) begin
-                        data_reg <= data_in;  
-                        bit_count <= 24;      
-                        next_state <= START;
-                    end else begin
-                        next_state <= IDLE;
-                    end
-                end
-                START: begin
-                    spi_cs_n <= 0;  // Assert Chip Select
-                    next_state <= TRANSFER;
-                end
-                TRANSFER: begin
-                    if (bit_count == 0) begin
-                        next_state <= STOP;
-                    end else begin
-                        if (spi_sclk) begin
-                            spi_mosi <= data_reg[23];  // Send MSB first
-                            data_reg <= data_reg << 1;  // Shift data left
-                        end
-                        if (!spi_sclk) begin
-                            bit_count <= bit_count - 1;  
-                        end
-                    end
-                end
-                STOP: begin
-                    spi_cs_n <= 1;  // Deassert Chip Select
-                    next_state <= IDLE;
-                end
-                default: begin
-                    next_state <= IDLE;
-                end
-            endcase
-        end
-    end
+    spi_fsm fsm_inst (
+        .clk(clk),
+        .rst_n(rst_n),
+        .spi_sclk(spi_sclk),
+        .load(load),
+        .data_in(data_in),
+        .spi_mosi(spi_mosi),
+        .spi_cs_n(spi_cs_n),
+        .spi_miso(spi_miso),
+        .data_out(data_out)
+    );
 
 endmodule
