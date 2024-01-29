@@ -6,6 +6,9 @@ module qpsk_demodulator(
     output reg [1:0] data_out
 );
 
+//simple decision boundary at 0 (the SYMBOL_THRESHOLD) to decide whether the I or Q components 
+//are positive or negative, mapping them back to the 2-bit binary data.
+
 localparam [11:0] SYMBOL_THRESHOLD = 12'h000; //threshold for pos/neg
 
 always @(posedge clk or negedge rst_n) begin
